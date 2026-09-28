@@ -35,7 +35,7 @@ pub fn build(b: *std.Build) void {
     b.installArtifact(example);
     const live = b.addRunArtifact(example);
     live.has_side_effects = true;
-    b.step("live", "Run one billable API call using TYPESAFE_API_KEY").dependOn(&live.step);
+    b.step("live", "Run one billable API call using TYPESAFE_API_KEY or OPENJEV_API_KEY").dependOn(&live.step);
     const fmt = b.addFmt(.{ .paths = &.{ "src", "examples", "build.zig" }, .check = true });
     const check = b.step("check", "Check formatting, tests, and example compilation");
     check.dependOn(&fmt.step);

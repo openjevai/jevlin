@@ -2,10 +2,28 @@ const std = @import("std");
 const engine = @import("engine.zig");
 const retry_after = @import("retry_after.zig");
 const Http = @This();
-/// Only the official HTTPS endpoint is supported in this first release.
+/// Two HTTPS endpoints are supported: TypeSafe (default) and OpenJEV (optional).
 /// std HTTP/TLS allocates using gpa. No allocation-free transport claim.
+/// TypeSafe direct endpoint — the unchanged default.
+pub const typesafe_endpoint = "https://api.typesafe.ai/v1/systemone";
+/// OpenJEV community gateway endpoint — opt in via OPENJEV_API_KEY or JEV_PROVIDER.
+pub const openjev_endpoint = "https://api.openjev.sh/v1/systemone";
+/// Model identifiers matching each provider.
+pub const typesafe_model = "jev-latest";
+pub const openjev_model = "openjev";
+/// Provider selection for the HTTP transport endpoint.
+pub const Provider = enum { typesafe, openjev };
+pub fn endpointFor(provider: Provider) []const u8 {
+    return switch (provider) {
+        .typesafe => typesafe_endpoint,
+        .openjev => openjev_endpoint,
+    };
+}
 gpa: std.mem.Allocator,
 io: std.Io,
+/// Endpoint used by exchange. Defaults to TypeSafe; set to openjev_endpoint
+/// (or use endpointFor) to route requests through the OpenJEV gateway.
+endpoint: []const u8 = typesafe_endpoint,
 authorization: [1024]u8 = undefined,
 authorization_len: usize,
 // This field has no storage or usable value in non-test builds.
@@ -35,7 +53,8 @@ fn sleep(context: *anyopaque, ns: u64) engine.Error!void {
     try cast(context).io.sleep(.{ .nanoseconds = ns }, .awake);
 }
 fn exchange(context: *anyopaque, body: []const u8, response: []u8, end: i96) engine.Error!engine.Reply {
-    return exchangeAt(cast(context), body, response, end, "https://api.typesafe.ai/v1/systemone");
+    const self = cast(context);
+    return exchangeAt(self, body, response, end, self.endpoint);
 }
 fn exchangeAt(self: *Http, body: []const u8, response: []u8, end: i96, endpoint: []const u8) engine.Error!engine.Reply {
     if (now(self) >= end) return error.DeadlineExceeded;

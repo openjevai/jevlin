@@ -36,3 +36,8 @@ Set the key through your environment/secret manager; avoid putting real keys in
 shell history. The SDK does not read credential files. Retries can incur extra
 charges. See the [API contract](../docs/api-stability.md) before automatically
 replaying a failed request.
+
+`OPENJEV_API_KEY=... zig build live` (or `JEV_PROVIDER=openjev`) routes the same
+example through the OpenJEV community gateway instead of TypeSafe, using the
+`openjev` model. TypeSafe remains the default when both keys are present unless
+`JEV_PROVIDER=openjev` is set.

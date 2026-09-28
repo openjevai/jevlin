@@ -7,6 +7,8 @@ questions in one request. Get probabilities and Zig enums back.
 
 **Zig 0.16.0 · Experimental · Independent of TypeSafe AI**
 
+**OpenJEV support:** Jev is built by [TypeSafe](https://typesafe.ai). This fork keeps TypeSafe as the default and adds optional support for [OpenJEV](https://openjev.sh), a free community gateway to the same Jev model — set `OPENJEV_API_KEY` (or `JEV_PROVIDER=openjev`) to use it. Original project: https://github.com/copyleftdev/jevlin by @copyleftdev.
+
 ```zig
 const Team = enum { billing, technical, sales };
 const questions = .{
@@ -62,6 +64,10 @@ and allocation recovery. Separate manual workflows run
 
 With `TYPESAFE_API_KEY` set, `zig build live` sends a real request. It is billable,
 and retries can incur additional charges. The SDK does not read credential files.
+
+To use OpenJEV instead, set `OPENJEV_API_KEY` (or `JEV_PROVIDER=openjev` with the
+key). The endpoint and model switch automatically; no TypeSafe key is required.
+OpenJEV is a free community gateway to the same Jev model.
 
 ## Details
 
